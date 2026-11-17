@@ -6,3 +6,6 @@ venv/
 out*.png
 final_*.png
 plate_clean.png
+fonts/*.ttf
+fonts/*.otf
+fonts/*.ttc

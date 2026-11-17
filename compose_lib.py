@@ -19,8 +19,8 @@ INK = np.array([0x14, 0x14, 0x13], np.float32)
 GOLD = np.array([0xB8, 0x89, 0x3A], np.float32)
 LGOLD = np.array([0xD4, 0xAF, 0x6A], np.float32)
 import os
-# Any CJK serif font works; Noto Serif SC Light is the reference look.
-FONT_PATH = os.environ.get("POEM_FONT", "NotoSerifSC-Light.otf")
+# Any CJK serif font works; default is KingHwa OldSong (京華老宋体) in fonts/.
+FONT_PATH = os.environ.get("POEM_FONT", str(Path(__file__).resolve().parent / "fonts" / "KingHwaOldSong.ttf"))
 SIGNATURE = os.environ.get("POEM_SIGNATURE", "青月")   # vertical name at lower left
 HANDLE = os.environ.get("POEM_HANDLE", "@YuLin807")    # rotated handle under the name
 

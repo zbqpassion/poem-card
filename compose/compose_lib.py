@@ -19,7 +19,7 @@ INK = np.array([0x14, 0x14, 0x13], np.float32)
 GOLD = np.array([0xB8, 0x89, 0x3A], np.float32)
 LGOLD = np.array([0xD4, 0xAF, 0x6A], np.float32)
 import os
-FONT_PATH = os.environ.get("POEM_FONT", str(Path(__file__).resolve().parent.parent / "fonts" / "NotoSerifSC-Light.otf"))
+FONT_PATH = os.environ.get("POEM_FONT", str(Path(__file__).resolve().parent.parent / "fonts" / "KingHwaOldSong.ttf"))
 SIGNATURE = os.environ.get("POEM_SIGNATURE", "青月")   # vertical name at lower left
 HANDLE = os.environ.get("POEM_HANDLE", "@YuLin807")    # rotated handle under the name
 
