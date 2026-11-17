@@ -8,6 +8,36 @@ An agent skill for classical Chinese poem cards: the local Codex CLI draws a tex
 
 > 本仓库 fork 自 [ythx-101/poem-plate](https://github.com/ythx-101/poem-plate)，把默认流程从“生图 + 重新配色合成”改成了“codex 出无字图 + 固定版式排字”。原作者的合成方式保留为备用。
 
+## 示例
+
+<table>
+<tr>
+<td><img src="examples/card-wenliushijiu.jpg" width="260" alt="白居易《问刘十九》"></td>
+<td><img src="examples/card-duizhuo.jpg" width="260" alt="李白《山中与幽人对酌》"></td>
+<td><img src="examples/card-jingtingshan.jpg" width="260" alt="李白《独坐敬亭山》"></td>
+</tr>
+<tr>
+<td align="center"><sub>白居易《问刘十九》</sub></td>
+<td align="center"><sub>李白《山中与幽人对酌》</sub></td>
+<td align="center"><sub>李白《独坐敬亭山》</sub></td>
+</tr>
+</table>
+
+三张用的是同一套版式：五言、七言自动排两列，字号、粗细、边距一致。
+
+排字前后对比，左边是 Codex 出的无字原图，右边是 `typeset.py` 排字后的成品（画面没有改动）：
+
+<table>
+<tr>
+<td><img src="examples/card-wenliushijiu-raw.jpg" width="300" alt="无字原图"></td>
+<td><img src="examples/card-wenliushijiu.jpg" width="300" alt="排字成品"></td>
+</tr>
+<tr>
+<td align="center"><sub>codex_gen.py 出的无字原图</sub></td>
+<td align="center"><sub>typeset.py 排字后</sub></td>
+</tr>
+</table>
+
 ## 流程
 
 1. **核对原文**：诗句、诗题、作者、朝代逐字对照可靠全文（搜韵、维基文库）。有通行异文先确认用哪版。
@@ -75,7 +105,7 @@ Codex 每张图是一个独立会话，约 1 到 2 分钟，建议后台并行�
 | `typeset.py` | 固定版式排字 |
 | `compose_lib.py`、`example_compose.py`、`compose/` | 原作者的合成方式（备用） |
 | `styles/classical-styles.md` | 11 种中国古典人物画法与提示词骨架 |
-| `examples/` | 原作者的示例图 |
+| `examples/` | 示例图：`card-*.jpg` 是新流程成品，其余是原作者的示例 |
 
 ## 备用：原版合成与动漫判词
 
