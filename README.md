@@ -1,128 +1,96 @@
-# poem-plate
+# poem-card
 
-**AI 画人物，代码排诗：把古诗和古典人物做成一张留白讲究、可以直接发的诗意插画。**
+**AI 只画画，代码只排字：把一首古诗做成一张留白讲究、文字零错字、可以直接发的 3:4 诗意插画。**
 
-poem-plate 是一个给 Claude Code 等 AI agent 用的诗画合成技能：生图模型画人物，Python 代码负责留白、配色和竖排中文诗句，帮写古诗/判词配图的创作者做出文字零错字、系列风格统一的 3:4 古典诗意插画（小红书 / X 可直接用）。
+poem-card 是一个给 Claude Code 等 AI agent 用的诗画技能（skill 名 `poem-plate`）：本机 Codex CLI 画出左侧留白、不带任何文字的古典插画，Python 脚本再按固定版式用京華老宋体竖排诗句和金色出处。成系列做时，每张的字号、粗细、边距完全一致。
 
-An agent skill + Python compositor for AI-illustrated classical Chinese poem plates with accurate vertical CJK typesetting.
+An agent skill for classical Chinese poem cards: the local Codex CLI draws a text-free illustration with an empty left margin, and `typeset.py` sets the poem vertically in KingHwa OldSong with a fixed house layout.
 
-一个给 Claude Code 等 AI agent 用的技能（skill）。生图模型负责人物的画功；代码负责把画缩到一侧、压成统一的纸色 / 墨色 / 单一金色、边缘羽化，再在大片留白里竖排原文、出处和落款。
+> 本仓库 fork 自 [ythx-101/poem-plate](https://github.com/ythx-101/poem-plate)，把默认流程从“生图 + 重新配色合成”改成了“codex 出无字图 + 固定版式排字”。原作者的合成方式保留为备用。
 
-![预览：新妇晨妆](examples/xinfu-preview.jpg)
+## 流程
 
-<sub>温庭筠《菩萨蛮》+ 朱庆馀《近试上张籍水部》。上图为最终成品，生图原图满版见 [examples/xinfu-raw.jpg](examples/xinfu-raw.jpg)。</sub>
+1. **核对原文**：诗句、诗题、作者、朝代逐字对照可靠全文（搜韵、维基文库）。有通行异文先确认用哪版。
+2. **选句**：版式是两列大字、每列两句。绝句四句全上；律诗挑最有画面感的两联。
+3. **出图**：`codex_gen.py` 调用 Codex CLI 内置生图，一首并行出两张候选。提示词要求左边 35% 完全留空、画里不放任何字、只用纸色、墨色和一种金色。
+4. **挑图**：看左边是否真的空着、手画得对不对、服饰道具合不合朝代。
+5. **排字**：`typeset.py` 按固定版式排字，画面原样保留、不重新配色。
+6. **检查定稿**：逐字核对成品，存为带“定稿”字样的文件。
 
-## 为什么要合成
+## 为什么这样分工
 
-- 生图模型原图是满版的，人物太满，没有地方放诗，中文字也会写成乱码。
-- 纯代码画线稿，人体和手很难画对。
-- 合成版两头取长：画交给模型，留白、配色、文字交给代码，文字永远准确，系列风格永远统一。
-
-## 适用场景 / 和其他做法比
-
-| 做法 | 问题 / 特点 |
+| 做法 | 问题 |
 |---|---|
-| 生图模型直接出图 | 人物太满，没有地方放诗，中文字常写成乱码 |
-| 纯代码画线稿 | 人体和手很难画对 |
-| **poem-plate 合成** | 画交给模型，留白、配色、文字和版式交给代码 |
+| 让 AI 直接把诗写进画里 | 竖排中文常有错字、漏字，字体也只能靠描述 |
+| 生图后由代码重新配纸、墨、金三色（原版做法） | GPT 生图的米色皮肤和衣料会被误判成金色，出现大片斑驳金黄 |
+| **AI 只画无字图，代码只排字** | 字一定准确，画面保持原样，系列版式统一 |
 
-适合：古诗配图、红楼梦人物插画、动漫角色古风同人、成系列的社交媒体诗画。
+## 固定版式
 
-## 它做什么
+按 Codex 出图尺寸 1086×1448 实测，其他尺寸按宽度等比缩放：
 
-- **文字先核实**：诗句、出处逐字对照可靠全文，画里不放任何字。
-- **出图提示词骨架**：1920s Art Deco 墨线插画、单一金色、留出左侧空白；按人物性格写神态；写明朝代服饰。
-- **代码合成**（`compose_lib.py`）：去边框、纸色压平、边缘羽化与提亮、缩放推到右侧、纸墨金色映射、竖排中文（《》自动旋转），文字压到画上会直接报错。
-- **严格评审**：六项打分，手畸形、错字、服饰朝代错、性感化都算 P0，不清零不交付。
-
-
-## v2：动漫角色 × 古典画法
-
-![预览：《无职转生》三妻](examples/preview.jpg)
-
-现在可以把动漫角色画成古典诗画，由三个旋钮自由组合：
-
-| 旋钮 | 选项 |
-|---|---|
-| **字** | 红楼式判词：工整、押韵、对仗的七言绝句，按平水韵校平仄和粘对，每句藏一个剧情典故 |
-| **色** | 克制色板：一种纸色、一种墨色，加一种强调色 |
-| **笔** | Art Deco 墨线，或 11 种中国古典人物画法：洛神赋、吴带当风、唐仕女、敦煌飞天、李公麟白描、陈洪绶、十二金钗……每种都附提示词骨架和高清图链接，见 [styles/classical-styles.md](styles/classical-styles.md) |
-
-| 角色 | 判词 |
-|---|---|
-| 希露菲 | 青丝一夜化霜华，墨镜藏眸入帝家。莫道重逢人不识，春风原是旧时花。 |
-| 洛琪希 | 心声难解别家乡，一骑携童出院墙。弟子焚香尊若圣，十年笑约作新娘。 |
-| 艾莉丝 | 赤焰飞扬意气高，留书断发入风涛。霜锋磨尽圣门雪，未诉相思先拔刀。 |
-
-系列合成脚本在 `compose/`：`compose_lib.py` 是系列版（固定版式骨架，指定哪几条边出血、不羽化，其余边提亮），`compose_bw.py` 让半句之间只空半格，`example_mushoku.py` 是上面这三张的参数。
-
-这些脚本里的 `cl_*.png` 等原图不随仓库提供，请换成你自己的生图原图路径；`compose_bw.py` 需要 scipy；系列版同样要用 `POEM_FONT` 指定中文字体（它默认找仓库根目录下的 `fonts/NotoSerifSC-Light.otf`，仓库里不带这个文件）。
-
-## English
-
-**poem-plate** is an agent skill that turns classical Chinese poems and characters into minimal, print-like illustrated plates. An image model draws the figure; `compose_lib.py` scales it to one side, maps everything to a strict cream / near-black / single-gold palette, feathers the edges, and typesets the poem, its source, and a signature vertically in the empty space. A strong reviewer model scores each plate and blocks delivery on P0 issues (malformed hands, wrong characters, wrong-era costume). The skill itself is written in Chinese.
-
-**v2** adds anime characters × 11 classical Chinese figure-painting styles, with Dream-of-the-Red-Chamber-style verse (判词). Keywords: AI illustration, vertical Chinese text, poem image generator, agent skill.
+- 字体：京華老宋体，笔画描边加粗 0.016
+- 大字：62 号，字距 69.6px，两句之间多空 64px，上边距 96px
+- 三列：右列第 1、2 句，左列第 3、4 句，两列中心距 100px，左边距约 89px
+- 出处：金色 `#B68F44`，写成「《诗题》朝代·作者」，竖向中心对齐左列
+- 不加系列小字、不加署名
+- 画面距文字不足 30px 时自动整体右移（右边裁掉的是本来就出血到画布外的部分），右移超过 80px 会警告
 
 ## 安装
 
-方式一（推荐）：
-
 ```bash
-git clone https://github.com/ythx-101/poem-plate ~/.claude/skills/poem-plate
+git clone https://github.com/zbqpassion/poem-card ~/.claude/skills/poem-plate
 cd ~/.claude/skills/poem-plate
 pip install -r requirements.txt
 ```
 
-方式二：只下载需要的文件：
+还需要：
 
-```bash
-mkdir -p ~/.claude/skills/poem-plate
-cd ~/.claude/skills/poem-plate
-for f in SKILL.md compose_lib.py example_compose.py requirements.txt styles/classical-styles.md; do
-  curl -L --create-dirs -o "$f" https://raw.githubusercontent.com/ythx-101/poem-plate/main/$f
-done
-pip install -r requirements.txt
-```
-
-如需系列版，再把 `compose/compose_lib.py compose/compose_bw.py compose/example_mushoku.py` 加进上面的文件列表。只用单张合成可以只装 `numpy pillow`；`scipy` 仅 `compose/compose_bw.py` 需要。
-
-需要一个中文衬线字体（推荐 [Noto Serif SC](https://fonts.google.com/noto/specimen/Noto+Serif+SC) Light），用 `POEM_FONT` 指定路径；`POEM_SIGNATURE`、`POEM_HANDLE` 改成你自己的署名。
+- **字体**：自行下载京華老宋体，改名为 `KingHwaOldSong.ttf` 放进 `fonts/`（字体不随仓库分发，见 [fonts/README.md](fonts/README.md)）。换字体用环境变量 `POEM_FONT`。
+- **出图**：安装 [Codex CLI](https://github.com/openai/codex) 并用 ChatGPT 账号登录，内置生图走账号额度，不需要 API key。也可以用任何能出 3:4 插画的模型自己出图，只要左边留空、画里无字。
 
 ## 快速开始
 
-1. 装依赖：`pip install -r requirements.txt`
-2. 设环境变量（字体必设，署名按需）：
-   ```bash
-   export POEM_FONT=/path/to/NotoSerifSC-Light.otf
-   export POEM_SIGNATURE=你的署名
-   export POEM_HANDLE=@your_handle
-   ```
-3. 用仓库自带的原图跑一遍：
-   ```bash
-   python example_compose.py examples/xinfu-raw.jpg out.png
-   ```
+```bash
+# 1. 出图：提示词骨架见 SKILL.md 第 2 步，写进 prompt.txt
+python codex_gen.py --prompt-file work/问刘十九/prompt.txt --out work/问刘十九/raw-a.png
+python codex_gen.py --prompt-file work/问刘十九/prompt.txt --out work/问刘十九/raw-b.png
 
-`example_compose.py` 里的 `COLUMNS` 从右往左排，每项是 `(文字, big|mid|small, 列后间距)`。如果报告画面压到文字留白区，调低 `scale_cap`（或直接传 `scale=...`）。
+# 2. 挑一张排字
+python typeset.py work/问刘十九/raw-b.png work/问刘十九/问刘十九_定稿.png \
+    --lines 绿蚁新醅酒 红泥小火炉 晚来天欲雪 能饮一杯无 \
+    --title 问刘十九 --dynasty 唐 --author 白居易
+```
 
-最小冒烟测试：`POEM_FONT=/path/to/字体文件 python tests/smoke_test.py`（没设字体会打印 skip）。
+`--lines` 必须给四句，不带标点；`--source` 可以整串替换出处文字。每次运行会打印字号、各列上下范围和画面右移量。
 
-## FAQ
+Codex 每张图是一个独立会话，约 1 到 2 分钟，建议后台并行跑。生成的原件同时保留在 `~/.codex/generated_images/<会话id>/`。
 
-**为什么不让 AI 直接把诗写进画里？** 生图模型写中文常常乱码，所以画里不放任何字，文字全部由代码排。
+## 文件
 
-**用什么生图模型？** 任何能出 3:4 插画的都行。
+| 文件 | 用途 |
+|---|---|
+| `SKILL.md` | 给 agent 读的完整流程、提示词骨架和检查标准 |
+| `codex_gen.py` | 调用 Codex CLI 出图，按会话 id 取回原图 |
+| `typeset.py` | 固定版式排字 |
+| `compose_lib.py`、`example_compose.py`、`compose/` | 原作者的合成方式（备用） |
+| `styles/classical-styles.md` | 11 种中国古典人物画法与提示词骨架 |
+| `examples/` | 原作者的示例图 |
 
-**需要什么字体？** 任意中文衬线体，推荐 Noto Serif SC Light，用 `POEM_FONT` 指定。
+## 备用：原版合成与动漫判词
 
-**文字压到画上怎么办？** 脚本会直接报错；调低 `scale_cap` 或传 `scale`。
+原作者的做法是把画缩小推到右侧，重新映射成纸、墨、金三色，再排字加署名（`example_compose.py`，画布 1500×2000）。只适合本来就是纯三色的生图结果，所以默认不用。
 
-**怎么改落款？** 设 `POEM_SIGNATURE` 和 `POEM_HANDLE`。
+![原版示例：新妇晨妆](examples/xinfu-preview.jpg)
 
-**能做动漫角色吗？** 能，见上面的 v2：判词 + 11 种古典画法，详见 [styles/classical-styles.md](styles/classical-styles.md)。
+原作者的 v2 还支持把动漫角色画成古典诗画：红楼式判词（七言绝句、平水韵、每句藏剧情典故）配 11 种古典画法，见 [styles/classical-styles.md](styles/classical-styles.md) 和 `compose/` 里的《无职转生》示例。
 
-**不用 Claude Code 能用吗？** 能。合成脚本是独立的 Python，可以单独跑；`SKILL.md` 是给 agent 读的流程说明。
+![原版示例：《无职转生》三妻](examples/preview.jpg)
+
+## English
+
+**poem-card** is a fork of [ythx-101/poem-plate](https://github.com/ythx-101/poem-plate). The default pipeline is: verify the poem text, have the Codex CLI (`codex_gen.py`) draw two text-free candidates that keep the left 35% of the canvas empty, pick one, then run `typeset.py` to set four lines in two vertical columns of KingHwa OldSong with a gold source column (《title》dynasty·author) centred on the left column. The drawing is never recoloured; if it comes within 30px of the text it is shifted right. The original recolour-and-compose pipeline (`compose_lib.py`) is kept as a fallback. Fonts are not redistributed; see `fonts/README.md`.
 
 ## License
 
-MIT
+MIT（沿用原项目）
