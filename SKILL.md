@@ -29,13 +29,16 @@ A finished 3:4 portrait illustration, high resolution, in the style of a 1920s A
 
 FIGURE: <人物，朝代服饰，动作与神态，2-4 件道具，背景>. Gold only on <2-3 处小件>.
 
+PERIOD ACCURACY (strict): every costume, object and building must belong to the <Tang> dynasty. Describe each prop by its period form: <例：wine warmed in a pottery jar or a Tang-style ewer (zhuzi) set on a small clay brazier; a shallow ceramic wine cup; a simple bronze or pottery oil lamp dish>. Never draw anachronisms: no glass lamp chimneys, no metal kettles or teapots with arched top handles, no porcelain teapots, no high-backed chairs or modern tables, no clocks, no window glass, no Ming/Qing or Japanese costume.
+
 PALETTE (strict): cream paper #f5f4ed background, near-black #141413 ink, one gold accent #B8893A. Skin and the light parts of clothing are the SAME flat cream as the paper, not beige, not yellow, no paper texture or stains on them. Gold appears only on thin pattern lines, small props and accents, never as large filled areas. Lips are a small, subtle touch of ink, no red. No other colors<: 诗里有红、绿等颜色时写明用墨画，例 the clay stove is drawn in ink, not red>.
 
 LINEWORK: bold confident long lines, solid black masses against large empty space, crisp clean edges. Hands mostly hidden in sleeves or showing only fingertips, correct five-finger anatomy. Dignified and fully clothed.
 
 No text, no letters, no characters, no calligraphy, no seal stamp, no signature, no watermark anywhere in the image.
 ```
-- 朝代服饰写明（Tang round-collar robe、Southern Song zhiduo 等），否则常画成民国或日式。道具也查朝代：唐代没有玻璃灯罩油灯。
+- 朝代服饰写明（Tang round-collar robe、Southern Song zhiduo 等），否则常画成民国或日式。
+- 道具必须写 PERIOD ACCURACY 段：把朝代填进去，每件道具写成该朝代的具体样子（只写“stove”“lamp”，模型会画成近代的）。实测出过的错：唐代出现玻璃灯罩油灯、带提梁的金属水壶。诗里有温酒、点灯、喝茶等动作时尤其要写。
 - 人物神态贴诗意：每首写一句「诗意 → 姿态/眼神/道具」的翻译放进 FIGURE。
 - 手是最大风险：提示里让手少露；选图时逐张放大看手指数。
 - 挑图标准：左侧 35% 真的空着（越界会压字）、手、朝代道具、画风统一。两张都越界就加强边界描述重出。
